@@ -1,40 +1,22 @@
 # TOOLS.md - Local Notes
 
-Skills define _how_ tools work. This file is for _your_ specifics — the stuff that's unique to your setup.
+Skills define _how_ tools work. This file is for _your_ specifics.
 
-## What Goes Here
+## 配置示例
 
-Things like:
+### 邮箱
+- Gmail: your-email@gmail.com
+- IMAP 服务器: imap.gmail.com
 
-- Invoice folder paths
-- Finance system API endpoints
-- Tax bureau website URLs
-- Email account configurations
-- Output/report destinations
-
-## 示例
-
-```markdown
 ### 发票目录
+- 输入: ~/发票/待处理/
+- 输出: ~/发票/已处理/
+- 归档: ~/发票/归档/
 
-- inbox: ~/Documents/发票/待处理/
-- archive: ~/Documents/发票/已归档/
-- output: ~/Documents/发票/报表/
-
-### 财务系统
-
-- 名称: 金蝶云
-- API: https://api.kingdee.com/...
-
-### 常用模板
-
-- 月报模板: ~/templates/invoice-report.xlsx
-```
-
-## Why Separate?
-
-Skills are shared. Your setup is yours. Keeping them apart means you can update skills without losing your notes, and share skills without leaking your infrastructure.
+### 其他
+- OCR 语言: chi_sim+eng
+- 默认 PDF 输出: A4
 
 ---
 
-Add whatever helps you do your job. This is your cheat sheet.
+请根据你的实际情况修改此文件。

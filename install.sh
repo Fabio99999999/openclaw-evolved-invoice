@@ -2,9 +2,9 @@
 set -euo pipefail
 
 # ============================================================
-# OpenClaw 进化版 — 一键安装脚本
+# OpenClaw 进化版 v0.2 — 一键安装脚本
 # 适用: macOS / Linux
-# 用途: 发票自动化及其他办公自动化任务
+# 用途: 发票自动化 + 全能办公助手
 # ============================================================
 
 RED='\033[0;31m'
@@ -14,8 +14,8 @@ CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${CYAN}  🦞 OpenClaw 进化版 — 一键安装${NC}"
-echo -e "${CYAN}  发票自动化专用版${NC}"
+echo -e "${CYAN}  🦞 OpenClaw 进化版 v0.2${NC}"
+echo -e "${CYAN}  发票自动化 + 全能办公助手${NC}"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
@@ -31,7 +31,6 @@ if command -v node &>/dev/null; then
 else
     echo -e "${YELLOW}⚠ Node.js 未安装，需要 v18+${NC}"
     echo "请先安装 Node.js: https://nodejs.org (推荐 v22+)"
-    echo "安装完成后重新运行此脚本。"
     exit 1
 fi
 
@@ -46,55 +45,62 @@ fi
 
 echo ""
 
-# ---- 第1步: 安装 OpenClaw ----
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+WORKSPACE_DIR="${HOME}/.openclaw/workspace"
+
+# ---- 第1步: 安装/更新 OpenClaw ----
 echo -e "${CYAN}[1/5] 安装 OpenClaw...${NC}"
 npm install -g openclaw 2>&1 | tail -3
-echo -e "${GREEN}✓ OpenClaw 安装完成${NC}"
+echo -e "${GREEN}✓ OpenClaw 安装完成 ($(openclaw --version 2>/dev/null || echo 'ok'))${NC}"
 
-# ---- 第2步: 停止已运行的 gateway ----
+# ---- 第2步: 停止已有服务 ----
 echo -e "${CYAN}[2/5] 停止已有服务...${NC}"
 openclaw gateway stop 2>/dev/null || true
 sleep 1
 echo -e "${GREEN}✓ 服务已停止${NC}"
 
-# ---- 第3步: 复制 workspace ----
+# ---- 第3步: 部署 workspace ----
 echo -e "${CYAN}[3/5] 部署 workspace（身份、技能、行为规则）...${NC}"
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-WORKSPACE_DIR="${HOME}/.openclaw/workspace"
-
-# 创建目录
 mkdir -p "${WORKSPACE_DIR}"
 mkdir -p "${WORKSPACE_DIR}/memory"
-mkdir -p "${WORKSPACE_DIR}/skills"
 
 # 复制核心身份文件
 cp "${SCRIPT_DIR}/workspace/SOUL.md" "${WORKSPACE_DIR}/SOUL.md"
 cp "${SCRIPT_DIR}/workspace/AGENTS.md" "${WORKSPACE_DIR}/AGENTS.md"
+cp "${SCRIPT_DIR}/workspace/SEARCH_RULES.md" "${WORKSPACE_DIR}/SEARCH_RULES.md"
 cp "${SCRIPT_DIR}/workspace/IDENTITY.md" "${WORKSPACE_DIR}/IDENTITY.md"
 cp "${SCRIPT_DIR}/workspace/TOOLS.md" "${WORKSPACE_DIR}/TOOLS.md"
 cp "${SCRIPT_DIR}/workspace/HEARTBEAT.md" "${WORKSPACE_DIR}/HEARTBEAT.md"
+cp "${SCRIPT_DIR}/workspace/CHECKPOINT.md" "${WORKSPACE_DIR}/CHECKPOINT.md"
 
-# 复制 USER.md 模板（用户自行编辑）
+# 复制 USER.md 模板（不覆盖已有）
 if [ ! -f "${WORKSPACE_DIR}/USER.md" ]; then
     cp "${SCRIPT_DIR}/workspace/USER.md" "${WORKSPACE_DIR}/USER.md"
     echo -e "${YELLOW}⚠ 请编辑 ~/.openclaw/workspace/USER.md 填入你的信息${NC}"
 fi
 
-# 复制 MEMORY.md（不含交易系统相关内容）
-cp "${SCRIPT_DIR}/workspace/MEMORY.md" "${WORKSPACE_DIR}/MEMORY.md"
+# 复制 MEMORY.md（不覆盖已有）
+if [ ! -f "${WORKSPACE_DIR}/MEMORY.md" ]; then
+    cp "${SCRIPT_DIR}/workspace/MEMORY.md" "${WORKSPACE_DIR}/MEMORY.md"
+fi
 
-# 复制技能（不含交易系统）
+# 复制技能
+mkdir -p "${WORKSPACE_DIR}/skills"
 if [ -d "${SCRIPT_DIR}/skills" ]; then
+    INSTALLED=0
+    SKIPPED=0
     for skill_dir in "${SCRIPT_DIR}/skills"/*/; do
         skill_name="$(basename "$skill_dir")"
         if [ -d "${WORKSPACE_DIR}/skills/${skill_name}" ]; then
-            echo -e "  ${YELLOW}↻${NC} 技能已存在，跳过: ${skill_name}"
+            SKIPPED=$((SKIPPED + 1))
         else
             cp -r "$skill_dir" "${WORKSPACE_DIR}/skills/${skill_name}"
             echo -e "  ${GREEN}✓${NC} 安装技能: ${skill_name}"
+            INSTALLED=$((INSTALLED + 1))
         fi
     done
+    echo -e "  ${GREEN}✓${NC} 安装 $INSTALLED 个新技能，跳过 $SKIPPED 个已有技能"
 fi
 
 echo -e "${GREEN}✓ workspace 部署完成${NC}"
@@ -113,39 +119,29 @@ echo -e "  支持: DeepSeek / OpenAI / GLM / 本地模型"
 echo -e "  留空则跳过，之后可以手动配置。"
 echo ""
 
-read -r -p "DeepSeek API Key (可选): " DEEPSEEK_KEY
-read -r -p "UIUI API Key (可选): " UIUI_KEY
+read -r -p "DeepSeek API Key (推荐): " DEEPSEEK_KEY
+read -r -p "备选 API Key (可选): " SECONDARY_KEY
 
-# 生成 openclaw.json
 OPENCLAW_CONFIG_DIR="${HOME}/.openclaw"
 mkdir -p "${OPENCLAW_CONFIG_DIR}"
 
-# 构建 providers
-PROVIDERS_JSON="{}"
-if [ -n "$DEEPSEEK_KEY" ]; then
-    PROVIDERS_JSON=$(echo "$PROVIDERS_JSON" | python3 -c "
-import json, sys
-p = json.load(sys.stdin)
-p['deepseek'] = {
-    'baseUrl': 'https://api.deepseek.com',
-    'apiKey': '$DEEPSEEK_KEY'
-}
-print(json.dumps(p, indent=2))
-" 2>/dev/null || echo '{"deepseek":{"baseUrl":"https://api.deepseek.com","apiKey":"'$DEEPSEEK_KEY'"}}')
-fi
-if [ -n "$UIUI_KEY" ]; then
-    PROVIDERS_JSON=$(echo "$PROVIDERS_JSON" | python3 -c "
-import json, sys
-p = json.load(sys.stdin)
-p['uiuiapi'] = {
-    'baseUrl': 'https://api.uiui.ai/v1',
-    'apiKey': '$UIUI_KEY'
-}
-print(json.dumps(p, indent=2))
-" 2>/dev/null || echo '{"uiuiapi":{"baseUrl":"https://api.uiui.ai/v1","apiKey":"'$UIUI_KEY'"}}')
-fi
+# 构建 providers JSON
+PROVIDERS="{}"
+[ -n "$DEEPSEEK_KEY" ] && PROVIDERS=$(python3 -c "
+import json
+p = json.loads('$PROVIDERS')
+p['deepseek'] = {'baseUrl': 'https://api.deepseek.com', 'apiKey': '$DEEPSEEK_KEY'}
+print(json.dumps(p))
+" 2>/dev/null) || PROVIDERS='{"deepseek":{"baseUrl":"https://api.deepseek.com","apiKey":"'$DEEPSEEK_KEY'"}}'
 
-cat > "${OPENCLAW_CONFIG_DIR}/openclaw.json" << 'CONFIGEOF'
+[ -n "$SECONDARY_KEY" ] && PROVIDERS=$(python3 -c "
+import json
+p = json.loads('$PROVIDERS')
+p['fallback'] = {'baseUrl': 'https://api.openai.com/v1', 'apiKey': '$SECONDARY_KEY'}
+print(json.dumps(p))
+" 2>/dev/null) || true
+
+cat > "${OPENCLAWS_CONFIG_DIR}/openclaw.json" << 'CONFIGEOF'
 {
   "agents": {
     "defaults": {
@@ -154,7 +150,7 @@ cat > "${OPENCLAW_CONFIG_DIR}/openclaw.json" << 'CONFIGEOF'
         "primary": "${PRIMARY_MODEL:-deepseek/deepseek-chat}",
         "fallbacks": [
           "deepseek/deepseek-chat",
-          "uiuiapi/deepseek-chat"
+          "fallback/deepseek-chat"
         ]
       },
       "models": {
@@ -164,11 +160,11 @@ cat > "${OPENCLAW_CONFIG_DIR}/openclaw.json" << 'CONFIGEOF'
         "deepseek/deepseek-reasoner": {
           "alias": "DeepSeek-R1"
         },
-        "uiuiapi/deepseek-chat": {
-          "alias": "Chat-UIUI"
+        "fallback/deepseek-chat": {
+          "alias": "Fallback"
         },
-        "uiuiapi/deepseek-reasoner": {
-          "alias": "Reasoner-UIUI"
+        "fallback/deepseek-reasoner": {
+          "alias": "Fallback-R1"
         }
       },
       "params": {
@@ -178,11 +174,20 @@ cat > "${OPENCLAW_CONFIG_DIR}/openclaw.json" << 'CONFIGEOF'
         "enabled": true
       }
     }
+  },
+  "nativeSkills": "auto",
+  "bundledDiscovery": "compat",
+  "skills": {
+    "entries": {
+      "clawhub": { "enabled": true },
+      "peekaboo": { "enabled": true },
+      "skill-finder-cn": { "enabled": true }
+    }
   }
 }
 CONFIGEOF
 
-# 替换占位符（用 python3 处理 JSON 更安全）
+# 写入 providers 和修正路径
 python3 << 'PYEOF' 2>/dev/null || true
 import json, os, re
 
@@ -194,7 +199,6 @@ with open(config_path, 'r') as f:
 primary = os.environ.get('PRIMARY_MODEL', 'deepseek/deepseek-chat')
 content = content.replace('${PRIMARY_MODEL:-deepseek/deepseek-chat}', primary)
 
-# 解析并重写
 config = json.loads(content)
 
 # 写入 providers
@@ -204,15 +208,14 @@ if os.environ.get('DEEPSEEK_KEY'):
         'baseUrl': 'https://api.deepseek.com',
         'apiKey': os.environ['DEEPSEEK_KEY']
     }
-if os.environ.get('UIUI_KEY'):
-    providers['uiuiapi'] = {
-        'baseUrl': 'https://api.uiui.ai/v1',
-        'apiKey': os.environ['UIUI_KEY']
+if os.environ.get('SECONDARY_KEY'):
+    providers['fallback'] = {
+        'baseUrl': 'https://api.openai.com/v1',
+        'apiKey': os.environ['SECONDARY_KEY']
     }
 if providers:
     config['providers'] = providers
 
-# 固定 workspace 路径
 config['agents']['defaults']['workspace'] = os.path.expanduser("~/.openclaw/workspace")
 
 with open(config_path, 'w') as f:
@@ -232,7 +235,7 @@ openclaw gateway start 2>&1 | tail -3 || {
 
 echo ""
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}  🎉 OpenClaw 进化版已安装完成！${NC}"
+echo -e "${GREEN}  🎉 OpenClaw 进化版 v0.2 已安装完成！${NC}"
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 echo -e "   ${CYAN}➜${NC} 打开 WebChat:  ${CYAN}http://localhost:3100${NC}"
@@ -249,41 +252,6 @@ echo -e "${YELLOW}📌 常用命令:${NC}"
 echo -e "   openclaw status         查看运行状态"
 echo -e "   openclaw gateway status  Gateway 状态"
 echo -e "   openclaw gateway logs   查看日志"
-echo -e "   openclaw configure      重新配置"
 echo ""
 
-# ---- 发票自动化向导 ----
-echo -e "${CYAN}是否需要安装发票自动化相关工具？${NC}"
-echo -e "  1) PDF 处理 (pdf2image, OCR)"
-echo -e "  2) 浏览器自动化 (网页端税控系统)"
-echo -e "  3) 邮件发票抓取"
-echo -e "  4) 全部安装"
-echo -e "  0) 跳过"
-echo ""
-read -r -p "选择 [0-4]: " SETUP_CHOICE
-
-case "$SETUP_CHOICE" in
-    1|4)
-        echo -e "${GREEN}安装 PDF/OCR 工具...${NC}"
-        pip3 install pdf2image pytesseract pillow 2>/dev/null || true
-        if command -v brew &>/dev/null; then
-            brew install tesseract tesseract-lang 2>/dev/null || true
-        fi
-        echo -e "${GREEN}✓ PDF/OCR 工具就绪${NC}"
-        ;;&
-    2|4)
-        echo -e "${GREEN}安装浏览器自动化...${NC}"
-        npm install -g @anthropic-ai/claude-code 2>/dev/null || true
-        openclaw config skill install agent-browser 2>/dev/null || true
-        echo -e "${GREEN}✓ 浏览器自动化就绪${NC}"
-        ;;&
-    3|4)
-        echo -e "${GREEN}安装邮件抓取...${NC}"
-        pip3 install imaplib2 2>/dev/null || true
-        echo -e "${GREEN}✓ 邮件抓取就绪${NC}"
-        echo -e "${YELLOW}  需要配置邮箱账号，安装完成后可在 WebChat 中配置${NC}"
-        ;;&
-esac
-
-echo ""
 echo -e "${GREEN}安装完成！开始使用吧 🚀${NC}"
