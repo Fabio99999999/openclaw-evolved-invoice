@@ -1,0 +1,592 @@
+{
+  "wizard": {
+    "lastRunAt": "2026-05-11T21:14:44.014Z",
+    "lastRunVersion": "2026.5.7",
+    "lastRunCommand": "doctor",
+    "lastRunMode": "local"
+  },
+  "auth": {
+    "profiles": {
+      "deepseek:default": {
+        "provider": "deepseek",
+        "mode": "api_key"
+      },
+      "uiuiapi:default": {
+        "provider": "uiuiapi",
+        "mode": "api_key"
+      },
+      "uiuiapi:gpt": {
+        "provider": "uiuiapi",
+        "mode": "api_key"
+      }
+    }
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "deepseek": {
+        "baseUrl": "https://api.deepseek.com",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "deepseek-v4-flash",
+            "name": "DeepSeek V4 Flash",
+            "api": "openai-completions",
+            "reasoning": true,
+            "contextWindow": 131072,
+            "maxTokens": 16384,
+            "compat": {
+              "supportsUsageInStreaming": true
+            }
+          },
+          {
+            "id": "deepseek-chat",
+            "name": "DeepSeek Chat",
+            "api": "openai-completions",
+            "reasoning": false,
+            "contextWindow": 131072,
+            "maxTokens": 8192,
+            "compat": {
+              "supportsUsageInStreaming": true
+            }
+          },
+          {
+            "id": "deepseek-reasoner",
+            "name": "DeepSeek Reasoner",
+            "api": "openai-completions",
+            "reasoning": true,
+            "contextWindow": 131072,
+            "maxTokens": 65536,
+            "compat": {
+              "supportsUsageInStreaming": true
+            }
+          }
+        ]
+      },
+      "uiuiapi": {
+        "baseUrl": "https://sg.uiuiapi.com/v1",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "deepseek-reasoner",
+            "name": "DeepSeek Reasoner (UIUIAPI)",
+            "api": "openai-completions",
+            "reasoning": true,
+            "contextWindow": 131072,
+            "maxTokens": 65536,
+            "compat": {
+              "supportsUsageInStreaming": true,
+              "supportsTools": true
+            }
+          },
+          {
+            "id": "deepseek-chat",
+            "name": "DeepSeek Chat (UIUIAPI)",
+            "api": "openai-completions",
+            "reasoning": false,
+            "contextWindow": 131072,
+            "maxTokens": 8192,
+            "compat": {}
+          },
+          {
+            "id": "qwen-vl-max",
+            "name": "Qwen VL Max (Vision)",
+            "api": "openai-completions",
+            "contextWindow": 32768,
+            "maxTokens": 4096,
+            "compat": {
+              "supportsTools": true
+            },
+            "input": [
+              "text",
+              "image"
+            ]
+          },
+          {
+            "id": "qwen-vl-plus",
+            "name": "Qwen VL Plus (Vision, cheaper)",
+            "api": "openai-completions",
+            "contextWindow": 32768,
+            "maxTokens": 4096,
+            "compat": {
+              "supportsTools": true
+            },
+            "input": [
+              "text",
+              "image"
+            ]
+          },
+          {
+            "id": "gemini-2.5-pro",
+            "name": "Gemini 2.5 Pro (via UIUIAPI)",
+            "api": "openai-completions",
+            "contextWindow": 1048576,
+            "maxTokens": 8192,
+            "input": [
+              "text",
+              "image"
+            ],
+            "compat": {
+              "supportsTools": true
+            }
+          },
+          {
+            "id": "gpt-5.4-xhigh",
+            "name": "GPT-5.4 xHigh (OpenAI, PDF native)",
+            "api": "openai-completions",
+            "contextWindow": 262144,
+            "maxTokens": 65536,
+            "input": [
+              "text",
+              "image"
+            ],
+            "compat": {
+              "supportsUsageInStreaming": true,
+              "supportsTools": true
+            }
+          },
+          {
+            "id": "gpt-5.4-high",
+            "name": "GPT-5.4 High (OpenAI, fallback)",
+            "api": "openai-completions",
+            "contextWindow": 262144,
+            "maxTokens": 32768,
+            "input": [
+              "text",
+              "image"
+            ],
+            "compat": {
+              "supportsUsageInStreaming": true,
+              "supportsTools": true
+            }
+          },
+          {
+            "id": "qwen3-vl-235b-a22b-thinking",
+            "name": "Qwen3 VL 235B Thinking (Vision)",
+            "api": "openai-completions",
+            "contextWindow": 131072,
+            "maxTokens": 8192,
+            "input": [
+              "text",
+              "image"
+            ],
+            "compat": {
+              "supportsTools": true
+            }
+          },
+          {
+            "id": "qwen3-vl-235b-a22b-instruct",
+            "name": "Qwen3 VL 235B Instruct (Vision)",
+            "api": "openai-completions",
+            "contextWindow": 131072,
+            "maxTokens": 8192,
+            "input": [
+              "text",
+              "image"
+            ],
+            "compat": {
+              "supportsTools": true
+            }
+          },
+          {
+            "id": "qwen3-vl-plus",
+            "name": "Qwen3 VL Plus (Vision)",
+            "api": "openai-completions",
+            "contextWindow": 131072,
+            "maxTokens": 8192,
+            "input": [
+              "text",
+              "image"
+            ],
+            "compat": {
+              "supportsTools": true
+            }
+          },
+          {
+            "id": "qwen-image-plus",
+            "name": "Qwen Image Plus (Generation)",
+            "api": "openai-completions",
+            "contextWindow": 32768,
+            "maxTokens": 4096,
+            "input": [
+              "text",
+              "image"
+            ],
+            "compat": {}
+          }
+        ]
+      },
+      "mlx-local": {
+        "baseUrl": "http://127.0.0.1:11435/v1",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "lmstudio-community/DeepSeek-R1-0528-Qwen3-8B-MLX-4bit",
+            "name": "DeepSeek R1 0528 8B (Local MLX)",
+            "api": "openai-completions",
+            "reasoning": true,
+            "contextWindow": 32768,
+            "maxTokens": 4096,
+            "compat": {
+              "supportsUsageInStreaming": false
+            }
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "deepseek/deepseek-v4-flash",
+        "fallbacks": [
+          "uiuiapi/deepseek-reasoner",
+          "mlx-local/lmstudio-community/DeepSeek-R1-0528-Qwen3-8B-MLX-4bit"
+        ]
+      },
+      "models": {
+        "deepseek/deepseek-chat": {
+          "alias": "DeepSeek"
+        },
+        "deepseek/deepseek-reasoner": {},
+        "uiuiapi/deepseek-reasoner": {
+          "alias": "Reasoner-UIUI"
+        },
+        "uiuiapi/deepseek-chat": {
+          "alias": "Chat-UIUI"
+        },
+        "mlx-local/Qwen2.5-7B-Instruct-4bit": {
+          "alias": "Qwen-Local"
+        },
+        "deepseek/deepseek-v4-flash": {
+          "alias": "DeepSeek-Flash"
+        },
+        "mlx-local/default_model": {
+          "alias": "Qwen-Local"
+        },
+        "mlx-local/lmstudio-community/DeepSeek-R1-0528-Qwen3-8B-MLX-4bit": {
+          "alias": "DeepSeek R1 Local"
+        },
+        "uiuiapi/qwen-vl-max": {
+          "alias": "Qwen-VL-Max"
+        },
+        "uiuiapi/qwen-vl-plus": {
+          "alias": "Qwen-VL-Plus"
+        },
+        "uiuiapi/gemini-2.5-pro": {
+          "alias": "Gemini 2.5 Pro"
+        },
+        "uiuiapi/gpt-5.4-xhigh": {
+          "alias": "GPT-5.4-xhigh"
+        },
+        "uiuiapi/gpt-5.4-high": {
+          "alias": "GPT-5.4-high"
+        },
+        "uiuiapi/qwen3-vl-235b-a22b-thinking": {
+          "alias": "Qwen-VL-Thinking"
+        },
+        "uiuiapi/qwen3-vl-235b-a22b-instruct": {
+          "alias": "Qwen-VL-235B"
+        },
+        "uiuiapi/qwen3-vl-plus": {
+          "alias": "Qwen-VL-Plus"
+        }
+      },
+      "workspace": "/Users/fabio/.openclaw/workspace",
+      "params": {
+        "maxTokens": 16384
+      },
+      "memorySearch": {
+        "enabled": true
+      },
+      "imageModel": {
+        "primary": "uiuiapi/qwen3-vl-235b-a22b-thinking",
+        "fallbacks": [
+          "uiuiapi/qwen3-vl-plus",
+          "uiuiapi/qwen-vl-max",
+          "uiuiapi/gpt-5.4-xhigh",
+          "uiuiapi/gemini-2.5-pro"
+        ]
+      },
+      "imageGenerationModel": {
+        "primary": "uiuiapi/gpt-5.4-xhigh",
+        "fallbacks": [
+          "uiuiapi/qwen-image-plus",
+          "uiuiapi/gemini-2.5-pro"
+        ]
+      },
+      "pdfModel": {
+        "primary": "uiuiapi/gpt-5.4-xhigh",
+        "fallbacks": [
+          "uiuiapi/qwen-vl-max",
+          "uiuiapi/gemini-2.5-pro"
+        ]
+      }
+    }
+  },
+  "tools": {
+    "profile": "coding",
+    "web": {
+      "search": {
+        "enabled": true,
+        "provider": "tavily"
+      }
+    }
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "restart": true,
+    "ownerDisplay": "raw"
+  },
+  "session": {
+    "dmScope": "per-channel-peer"
+  },
+  "hooks": {
+    "internal": {
+      "enabled": true,
+      "entries": {
+        "session-memory": {
+          "enabled": true
+        },
+        "bootstrap-extra-files": {
+          "enabled": true
+        },
+        "boot-md": {
+          "enabled": true
+        }
+      }
+    }
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "loopback",
+    "controlUi": {
+      "allowInsecureAuth": true
+    },
+    "auth": {
+      "mode": "token",
+      "token": "00487510fd21772036b844d8f8f29003a8236a2dcbbfc9fd"
+    },
+    "tailscale": {
+      "mode": "off",
+      "resetOnExit": false
+    },
+    "nodes": {
+      "denyCommands": [
+        "camera.snap",
+        "camera.clip",
+        "screen.record",
+        "contacts.add",
+        "calendar.add",
+        "reminders.add",
+        "sms.send"
+      ]
+    }
+  },
+  "plugins": {
+    "allow": [
+      "deepseek",
+      "intelligent-compression",
+      "tavily",
+      "openclaw-lark",
+      "feishu",
+      "memory-core"
+    ],
+    "entries": {
+      "tavily": {
+        "enabled": true,
+        "config": {
+          "webSearch": {
+            "apiKey": "***SANITIZED***"
+          }
+        }
+      },
+      "deepseek": {
+        "enabled": true
+      },
+      "intelligent-compression": {
+        "config": {
+          "countThreshold": 10,
+          "maxMessageLength": 3000,
+          "keepRecentTools": 5,
+          "debounceEnabled": true,
+          "debounceMinSavingsRatio": 0.1,
+          "debounceCooldownCompressions": 3,
+          "tokenBudgetEnabled": true,
+          "reservedTokenBudget": 16000,
+          "protectedRecentTools": 3
+        }
+      },
+      "openclaw-lark": {
+        "enabled": true
+      }
+    },
+    "bundledDiscovery": "compat"
+  },
+  "meta": {
+    "lastTouchedVersion": "2026.5.7",
+    "lastTouchedAt": "2026-05-11T21:14:44.047Z"
+  },
+  "channels": {
+    "feishu": {
+      "enabled": true,
+      "appId": "cli_a9366b10e3785ccc",
+      "appSecret": "8KQE8Q8TT9aEXOM9BU8bFPO4FbfbWLDR",
+      "connectionMode": "websocket",
+      "domain": "feishu",
+      "dmPolicy": "allowlist",
+      "allowFrom": [
+        "ou_6009621c21e0adb713cd2c1679d6179b"
+      ],
+      "groupPolicy": "allowlist",
+      "webhookPath": "/feishu/events",
+      "reactionNotifications": "own",
+      "typingIndicator": true,
+      "resolveSenderNames": true
+    }
+  },
+  "env": {
+    "QVERIS_API_KEY": "sk-eYuIblBpeeApCtbKM2KbdtY1-io1TpceqbSAvDdKplE",
+    "ANSPIRE_API_KEY": "sk-lZnHtD7wnXP39VayykCLkrzpvFe8oi0W"
+  },
+  "messages": {
+    "groupChat": {
+      "visibleReplies": "message_tool"
+    }
+  },
+  "skills": {
+    "entries": {
+      "1password": {
+        "enabled": false
+      },
+      "apple-notes": {
+        "enabled": false
+      },
+      "apple-reminders": {
+        "enabled": false
+      },
+      "bear-notes": {
+        "enabled": false
+      },
+      "blogwatcher": {
+        "enabled": false
+      },
+      "blucli": {
+        "enabled": false
+      },
+      "bluebubbles": {
+        "enabled": false
+      },
+      "camsnap": {
+        "enabled": false
+      },
+      "coding-agent": {
+        "enabled": false
+      },
+      "discord": {
+        "enabled": false
+      },
+      "eightctl": {
+        "enabled": false
+      },
+      "gemini": {
+        "enabled": false
+      },
+      "gifgrep": {
+        "enabled": false
+      },
+      "gog": {
+        "enabled": false
+      },
+      "goplaces": {
+        "enabled": false
+      },
+      "himalaya": {
+        "enabled": false
+      },
+      "imsg": {
+        "enabled": false
+      },
+      "mcporter": {
+        "enabled": false
+      },
+      "model-usage": {
+        "enabled": false
+      },
+      "notion": {
+        "enabled": false
+      },
+      "obsidian": {
+        "enabled": false
+      },
+      "openai-whisper": {
+        "enabled": false
+      },
+      "openai-whisper-api": {
+        "enabled": false
+      },
+      "openhue": {
+        "enabled": false
+      },
+      "oracle": {
+        "enabled": false
+      },
+      "ordercli": {
+        "enabled": false
+      },
+      "peekaboo": {
+        "enabled": true
+      },
+      "sag": {
+        "enabled": false
+      },
+      "session-logs": {
+        "enabled": false
+      },
+      "sherpa-onnx-tts": {
+        "enabled": false
+      },
+      "slack": {
+        "enabled": false
+      },
+      "songsee": {
+        "enabled": false
+      },
+      "sonoscli": {
+        "enabled": false
+      },
+      "spotify-player": {
+        "enabled": false
+      },
+      "tavily-search": {
+        "enabled": false
+      },
+      "things-mac": {
+        "enabled": false
+      },
+      "tmux": {
+        "enabled": false
+      },
+      "trello": {
+        "enabled": false
+      },
+      "voice-call": {
+        "enabled": false
+      },
+      "wacli": {
+        "enabled": false
+      },
+      "xurl": {
+        "enabled": false
+      },
+      "clawhub": {
+        "enabled": true
+      },
+      "skill-finder-cn": {
+        "enabled": true
+      }
+    }
+  }
+}

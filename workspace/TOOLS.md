@@ -1,22 +1,40 @@
 # TOOLS.md - Local Notes
 
-Skills define _how_ tools work. This file is for _your_ specifics.
+Skills define _how_ tools work. This file is for _your_ specifics — the stuff that's unique to your setup.
 
-## 配置示例
+## What Goes Here
 
-### 邮箱
-- Gmail: your-email@gmail.com
-- IMAP 服务器: imap.gmail.com
+Things like:
 
-### 发票目录
-- 输入: ~/发票/待处理/
-- 输出: ~/发票/已处理/
-- 归档: ~/发票/归档/
+- Camera names and locations
+- SSH hosts and aliases
+- Preferred voices for TTS
+- Speaker/room names
+- Device nicknames
+- Anything environment-specific
 
-### 其他
-- OCR 语言: chi_sim+eng
-- 默认 PDF 输出: A4
+## Examples
+
+```markdown
+### Cameras
+
+- living-room → Main area, 180° wide angle
+- front-door → Entrance, motion-triggered
+
+### SSH
+
+- home-server → 192.168.1.100, user: admin
+
+### TTS
+
+- Preferred voice: "Nova" (warm, slightly British)
+- Default speaker: Kitchen HomePod
+```
+
+## Why Separate?
+
+Skills are shared. Your setup is yours. Keeping them apart means you can update skills without losing your notes, and share skills without leaking your infrastructure.
 
 ---
 
-请根据你的实际情况修改此文件。
+Add whatever helps you do your job. This is your cheat sheet.
